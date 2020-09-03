@@ -1,2 +1,2 @@
-# The React Testing Masterclass by badhcode (katifrantz)
+#### The React Testing Masterclass by badhcode (kati frantz)
 
