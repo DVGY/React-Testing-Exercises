@@ -1,6 +1,6 @@
 import React from 'react'
 import { axe } from 'jest-axe'
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, screen } from '@testing-library/react'
 
 import Checkbox from '../../../components/Checkbox'
 
@@ -11,13 +11,53 @@ import Checkbox from '../../../components/Checkbox'
  * should.
  */
 describe('The <Checkbox /> component', () => {
-  it('❌ Should render the label and checkbox the user will see', () => {})
+  const setUpCheckBox = () => render(<Checkbox {...mockDefaultProps} />)
 
-  it('❌ Should make the checkbox accessible by setting the id and htmlFor attributes on label and checkbox', () => {})
+  const mockDefaultProps = {
+    label: 'TEST_CHECKBOX_LABEL',
+    id: 'TEST_CHECKBOX_ID',
+    checked: false,
+    background: '#000',
+    checkMarkBackground: '#fff',
 
-  it('❌ Should call the onChange handler when it is provided', () => {})
+    onChange: jest.fn(),
+  }
+  it('❌ Should render the label and checkbox the user will see', () => {
+    const { asFragment } = setUpCheckBox()
+    expect(asFragment()).toMatchSnapshot()
+    //This is manual testing
+    // expect(container.querySelector('label')).not.toBeNull()
+    // expect(container.querySelector('input[type=checkbox]')).not.toBeNull()
+  })
 
-  it('❌ Should change state correctly when clicked (checked and unchecked)', () => {})
+  it('❌ Should make the checkbox accessible by setting the id and htmlFor attributes on label and checkbox', () => {
+    const { getByLabelText } = setUpCheckBox()
 
-  it('❌ should not fail any accessibility tests', async () => {})
+    expect(getByLabelText('TEST_CHECKBOX_LABEL')).toBeInTheDocument()
+  })
+
+  it('❌ Should call the onChange handler when it is provided', () => {
+    const { getByLabelText } = setUpCheckBox()
+
+    const checkbox = getByLabelText('TEST_CHECKBOX_LABEL')
+
+    fireEvent.click(checkbox)
+
+    expect(mockDefaultProps.onChange).toHaveBeenCalled()
+  })
+
+  it('❌ Should change state correctly when clicked (checked and unchecked)', () => {
+    const { getByLabelText } = setUpCheckBox()
+
+    const checkbox = getByLabelText('TEST_CHECKBOX_LABEL')
+
+    fireEvent.click(checkbox)
+
+    expect(mockDefaultProps.onChange).toHaveBeenCalled()
+  })
+
+  it('❌ should not fail any accessibility tests', async () => {
+    const { container } = setUpCheckBox()
+    expect(await axe(container)).toHaveNoViolations()
+  })
 })

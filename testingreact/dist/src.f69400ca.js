@@ -29809,12 +29809,12 @@ _ref) {
         // Distinguish between actual "data" props that were passed to the wrapper component,
         // and values needed to control behavior (forwarded refs, alternate context instances).
         // To maintain the wrapperProps object reference, memoize this destructuring.
-        var forwardedRef = props.forwardedRef,
-            wrapperProps = (0, _objectWithoutPropertiesLoose2.default)(props, ["forwardedRef"]);
-        return [props.context, forwardedRef, wrapperProps];
+        var reactReduxForwardedRef = props.reactReduxForwardedRef,
+            wrapperProps = (0, _objectWithoutPropertiesLoose2.default)(props, ["reactReduxForwardedRef"]);
+        return [props.context, reactReduxForwardedRef, wrapperProps];
       }, [props]),
           propsContext = _useMemo[0],
-          forwardedRef = _useMemo[1],
+          reactReduxForwardedRef = _useMemo[1],
           wrapperProps = _useMemo[2];
 
       var ContextToUse = (0, _react.useMemo)(function () {
@@ -29917,9 +29917,9 @@ _ref) {
 
       var renderedWrappedComponent = (0, _react.useMemo)(function () {
         return _react.default.createElement(WrappedComponent, (0, _extends2.default)({}, actualChildProps, {
-          ref: forwardedRef
+          ref: reactReduxForwardedRef
         }));
-      }, [forwardedRef, WrappedComponent, actualChildProps]); // If React sees the exact same element reference as last time, it bails out of re-rendering
+      }, [reactReduxForwardedRef, WrappedComponent, actualChildProps]); // If React sees the exact same element reference as last time, it bails out of re-rendering
       // that child, same as if it was wrapped in React.memo() or returned false from shouldComponentUpdate.
 
       var renderedChild = (0, _react.useMemo)(function () {
@@ -29945,7 +29945,7 @@ _ref) {
     if (forwardRef) {
       var forwarded = _react.default.forwardRef(function forwardConnectRef(props, ref) {
         return _react.default.createElement(Connect, (0, _extends2.default)({}, props, {
-          forwardedRef: ref
+          reactReduxForwardedRef: ref
         }));
       });
 
@@ -31430,12 +31430,14 @@ function useSelectorWithStoreAndSubscription(selector, equalityFn, store, contex
   }, [store, contextSub]);
   var latestSubscriptionCallbackError = (0, _react.useRef)();
   var latestSelector = (0, _react.useRef)();
+  var latestStoreState = (0, _react.useRef)();
   var latestSelectedState = (0, _react.useRef)();
+  var storeState = store.getState();
   var selectedState;
 
   try {
-    if (selector !== latestSelector.current || latestSubscriptionCallbackError.current) {
-      selectedState = selector(store.getState());
+    if (selector !== latestSelector.current || storeState !== latestStoreState.current || latestSubscriptionCallbackError.current) {
+      selectedState = selector(storeState);
     } else {
       selectedState = latestSelectedState.current;
     }
@@ -31449,6 +31451,7 @@ function useSelectorWithStoreAndSubscription(selector, equalityFn, store, contex
 
   (0, _useIsomorphicLayoutEffect.useIsomorphicLayoutEffect)(function () {
     latestSelector.current = selector;
+    latestStoreState.current = storeState;
     latestSelectedState.current = selectedState;
     latestSubscriptionCallbackError.current = undefined;
   });
@@ -31470,7 +31473,7 @@ function useSelectorWithStoreAndSubscription(selector, equalityFn, store, contex
         latestSubscriptionCallbackError.current = err;
       }
 
-      forceRender({});
+      forceRender();
     }
 
     subscription.onStateChange = checkForUpdates;
@@ -31504,14 +31507,16 @@ function createSelectorHook(context) {
     }
 
     if ("development" !== 'production' && !selector) {
-      throw new Error("You must pass a selector to useSelectors");
+      throw new Error("You must pass a selector to useSelector");
     }
 
     var _useReduxContext = useReduxContext(),
         store = _useReduxContext.store,
         contextSub = _useReduxContext.subscription;
 
-    return useSelectorWithStoreAndSubscription(selector, equalityFn, store, contextSub);
+    var selectedState = useSelectorWithStoreAndSubscription(selector, equalityFn, store, contextSub);
+    (0, _react.useDebugValue)(selectedState);
+    return selectedState;
   };
 }
 /**
@@ -37779,7 +37784,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53795" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59005" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
